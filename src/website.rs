@@ -10,18 +10,29 @@ pub struct Website {
 }
 
 impl Website {
-    pub fn new(id:String, config: &AppConfig) -> Result<Website, Box<dyn std::error::Error>> {
-        let website_config = config.websites.iter().find(|w| w.id == id);
-        if let Some(website_config) = website_config {
-            Ok(Website {
-                id: website_config.id.clone(),
-                content_processor: website_config.content_processor.clone(),
-                processor_root: website_config.processor_root.clone(),
-                webroot: format!("/var/www/{}", website_config.processor_root),
-                index: website_config.index,
-            })
-        } else {
-            Err(format!("Website with id '{}' not found in config", id).into())
+    pub fn new(id: String, cp: String, pr: String, wr: String, index: bool) -> Website {
+        let web_root = std::path::Path::new(&wr).join(&id);
+        Website {
+            id,
+            content_processor: cp,
+            processor_root: pr,
+            webroot: web_root.to_str().unwrap().to_string(),
+            index,
         }
     }
+}
+
+pub fn load_websites(config: &AppConfig) -> Result<Vec<Website>, Box<dyn std::error::Error>> {
+    let mut websites = Vec::new();
+    for website_config in &config.websites {
+        let website = Website::new(
+            website_config.id.clone(),
+            website_config.content_processor.clone(),
+            website_config.processor_root.clone(),
+            website_config.processor_root.clone(),
+            website_config.index,
+        );
+        websites.push(website);
+    }
+    Ok(websites)
 }
