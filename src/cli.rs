@@ -1,11 +1,36 @@
-use clap::Parser;
+use clap::{Args, Parser, Subcommand};
 
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-pub struct Args {
+#[derive(Debug, Parser)]
+#[clap(name = "sheepstor", version)]
+pub struct Cli {
+    #[clap(flatten)]
+    pub global_opts: GlobalOpts,
 
+    #[clap(subcommand)]
+    pub command: Commands,
+}
 
-    /// Enable debug logging
+#[derive(Debug, Args)]
+pub struct GlobalOpts {
+    ///Enable debug logging
+    #[clap(global = true)]
     #[arg(short, long, default_value_t = false)]
     pub debug: bool,
 }
+
+#[derive(Debug, Subcommand)]
+pub enum Commands {
+    /// Help message for Server.
+    Server {
+        /// Port number
+        #[clap(long, short = 'p',default_value_t = 8081)]
+        port: u16,
+    },
+    /// Help message for Update.
+    Update {
+        /// Site(s) to update
+        #[clap(long, short = 's')]
+        sites: String,
+    }
+}
+
