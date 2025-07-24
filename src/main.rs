@@ -5,14 +5,15 @@ use sheepstor::logging::configure_flexi_logger;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     configure_flexi_logger(cli.global_opts.debug)?;
-    log::info!("Starting Process");
+    log::info!("Starting process");
+    let config = sheepstor::config::Config::load(cli.global_opts.config)?;
 
-    match &cli.command {
+    match &cli.commands {
         Commands::Server { port } => {
-            log::info!("Running Server on port: {}...", port);
+            log::info!("Running Server on port: {}", port);
         },
         Commands::Update { sites } => {
-            log::info!("Updating site(s): {}...", sites);
+            log::info!("Updating site(s): {}", sites);
         }
     }
     log::info!("Process Completed");

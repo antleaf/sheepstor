@@ -7,13 +7,11 @@ pub fn configure_flexi_logger(debug: bool) -> Result<(), Box<dyn std::error::Err
     flexi_logger::Logger::try_with_str(logging_level)?
         .log_to_stdout()
         .set_palette("1;5;32;3;-".parse().unwrap())
-        // .format(flexi_logger::colored_opt_format)
         .format(my_own_format)
         .start()?;
 
     Ok(())
 }
-
 
 pub fn my_own_format(
     w: &mut dyn std::io::Write,
@@ -25,8 +23,8 @@ pub fn my_own_format(
         w,
         "{}: {}:{} ",
         style(level).paint(level.to_string()),
-        record.file().unwrap_or("<unnamed>"),
-        record.line().unwrap_or(0),
+        style(level).paint(record.file().unwrap_or("<unnamed>")),
+        style(level).paint(record.line().unwrap_or(0).to_string()),
     )?;
     write!(w, "{}", record.args().to_string())
 }

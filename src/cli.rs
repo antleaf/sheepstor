@@ -7,11 +7,16 @@ pub struct Cli {
     pub global_opts: GlobalOpts,
 
     #[clap(subcommand)]
-    pub command: Commands,
+    pub commands: Commands,
 }
 
 #[derive(Debug, Args)]
 pub struct GlobalOpts {
+    /// Config file path
+    #[clap(global = true)]
+    #[clap(long, short = 'c', default_value_t = String::from("./config.yaml"))]
+    pub config: String,
+
     ///Enable debug logging
     #[clap(global = true)]
     #[arg(short, long, default_value_t = false)]
