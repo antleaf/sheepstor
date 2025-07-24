@@ -1,7 +1,8 @@
+use std::fs;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Config {
+pub struct AppConfig {
     pub source_root: String,
     pub docs_root: String,
     pub github_webhook_secret_env_key: String,
@@ -24,8 +25,8 @@ pub struct WebsiteConfig {
     pub git: GitRepoConfig,
 }
 
-impl Config {
-    pub fn load(config_file_path: String) -> Result<Config, Box<dyn std::error::Error>> {
+impl AppConfig {
+    pub fn load(config_file_path: String) -> Result<AppConfig, Box<dyn std::error::Error>> {
         let path = std::path::Path::new(&config_file_path);
         let file = match std::fs::File::open(&path) {
             Ok(file) => {
@@ -36,7 +37,7 @@ impl Config {
                 return Err(err.into());
             }
         };
-        let config: Config = match serde_yaml::from_reader(file) {
+        let config: AppConfig = match serde_yaml::from_reader(file) {
             Ok(config) => {
                 log::info!("Loaded config from file at {}",path.display());
                 config
@@ -47,5 +48,11 @@ impl Config {
             }
         };
         Ok(config)
+    }
+
+    pub fn initialise(&self)-> Result<(), Box<dyn std::error::Error>> {
+        fs::create_dir_all(self.source_root.clone())?;
+        fs::create_dir_all(self.docs_root.clone())?;
+        Ok(())
     }
 }

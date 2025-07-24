@@ -6,7 +6,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     configure_flexi_logger(cli.global_opts.debug)?;
     log::info!("Starting process");
-    let config = sheepstor::config::Config::load(cli.global_opts.config)?;
+    let config = sheepstor::config::AppConfig::load(cli.global_opts.config)?;
+    config.initialise()?;
 
     match &cli.commands {
         Commands::Server { port } => {
