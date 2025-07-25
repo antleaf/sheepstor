@@ -28,7 +28,7 @@ pub enum Commands {
     /// Help message for Server.
     Server {
         /// Port number
-        #[clap(long, short = 'p',default_value_t = 8081)]
+        #[clap(long, short = 'p',default_value_t = 3000)]
         port: u16,
     },
     /// Help message for Update.
@@ -36,6 +36,8 @@ pub enum Commands {
         /// Site(s) to update
         #[clap(long, short = 's')]
         sites: String,
-    }
+    },
+    Scratch {
+    },
 }
 
