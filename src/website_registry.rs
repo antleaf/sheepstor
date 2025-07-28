@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use crate::config::AppConfig;
 use crate::website::Website;
 
@@ -18,7 +19,7 @@ impl WebsiteRegistry {
                 config.source_root.clone(),
                 website_config.content_processor.clone(),
                 website_config.processor_root.clone(),
-                website_config.processor_root.clone(),
+                config.docs_root.clone(),
                 website_config.index,
                 website_config.git.clone_id.clone(),
                 website_config.git.repo_name.clone(),
@@ -34,12 +35,29 @@ impl WebsiteRegistry {
         self.websites.len() as u8
     }
     
-    pub fn get_website(&self, id: &str) -> Option<&Website> {
+    pub fn get_website_by_id(&self, id: &str) -> Option<&Website> {
         self.websites.iter().find(|w| w.id == id)
     }
 
     pub fn get_website_by_repo_name_and_branch_ref(&self, repo_name: String, branch_ref: String)  -> Option<&Website> {
         self.websites.iter().find(|w| w.git_repo.repo_name == repo_name && w.git_repo.branch_ref() == branch_ref)
+    }
+
+    pub fn process_website(&self, website: Website) -> Result<(), Box<dyn std::error::Error>> {
+        log::debug!("Processing website: {}...", website.id);
+        website.update_sources()?;
+        website.build()?;
+        Ok(())
+    }
+
+    pub fn process_all_websites(&self) -> Result<(), Box<dyn std::error::Error>> {
+        self.websites.iter().for_each(|website| {
+            match self.process_website(website.clone()) {
+                Ok(_) => log::info!("Website {} processed successfully", website.id),
+                Err(e) => log::error!("Failed to process website '{}': {}", website.id, e),
+            }
+        });
+        Ok(())
     }
 
 }

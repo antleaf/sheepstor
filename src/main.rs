@@ -15,18 +15,6 @@ async fn main() {
     let registry = website_registry::WebsiteRegistry::new(&config);
     log::info!("Loaded {} websites", registry.count());
 
-    // let test_website_id = "repo_for_testing_webhooks";
-    // if let Some(website) = registry.get_website(test_website_id) {
-    //     log::debug!("Selected website: {}", website.id);
-    //     log::debug!("Source root for website: {} are at: {}", website.id, website.git_repo.working_dir);
-    //     match website.update_sources() {
-    //         Ok(_) => log::info!("Sources updated for website: {}", website.id),
-    //         Err(e) => log::error!("Failed to update sources for website '{}': {}", website.id, e),
-    //     }
-    // } else {
-    //     log::debug!("Website with ID '{}' not found", test_website_id);
-    // }
-
     match &cli.commands {
         Commands::Server { port } => {
             log::info!("Running Server on port: {}", port);
@@ -35,10 +23,39 @@ async fn main() {
         }
         Commands::Update { sites } => {
             log::info!("Updating site(s): {}", sites);
+            match sites.as_str() {
+                "all" => {
+                    log::info!("Updating all sites");
+                    match registry.process_all_websites() {
+                        Ok(_) => log::info!("All websites updated successfully"),
+                        Err(e) => log::error!("Failed to update all websites: {}", e),
+                    }
+                }
+                _ => {
+                    log::info!("Updating specific site(s): {}", sites);
+                    let site_list: Vec<&str> = sites.split(',').collect();
+                    for site_id in site_list {
+                        let website = registry.get_website_by_id(site_id);
+                        match website {
+                            Some(website) => {
+                                log::info!("Processing website: {}", site_id);
+                                match registry.process_website(website.clone()) {
+                                    Ok(_) => log::info!("Website '{}' updated successfully", site_id),
+                                    Err(e) => log::error!("Failed to update website '{}': {}", site_id, e),
+                                }
+                            }
+                            None => {
+                                log::warn!("Website '{}' not found in registry", site_id);
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
         }
         Commands::Scratch {} => {
             log::info!("Running Scratch");
-            sheepstor::scratch::scratch().expect("Failed to run scratch - quitting");
+            sheepstor::scratch::scratch(registry);
         }
     }
     log::info!("Process Completed");
