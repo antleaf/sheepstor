@@ -38,10 +38,10 @@ async fn main() {
                         let website = registry.get_website_by_id(site_id);
                         match website {
                             Some(website) => {
-                                log::info!("Processing website: {}", site_id);
+                                log::info!("Processing website: {}", website.id);
                                 match registry.process_website(website.clone()) {
-                                    Ok(_) => log::info!("Website '{}' updated successfully", site_id),
-                                    Err(e) => log::error!("Failed to update website '{}': {}", site_id, e),
+                                    Ok(_) => log::info!("Website '{}' updated successfully", website.id),
+                                    Err(e) => log::error!("Failed to update website '{}': {}", website.id, e),
                                 }
                             }
                             None => {

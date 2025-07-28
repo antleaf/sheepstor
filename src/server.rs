@@ -1,16 +1,16 @@
 use crate::auth::validate_github_secret3;
+use crate::website_registry::WebsiteRegistry;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
 use axum::{
-    http::header::HeaderMap,
-    http::StatusCode,
-    routing::{get, post},
     Router,
+    http::StatusCode,
+    http::header::HeaderMap,
+    routing::{get, post},
 };
 use hmac::Hmac;
 use secrecy::{ExposeSecret, SecretString};
 use sha2::Sha256;
-use crate::website_registry::WebsiteRegistry;
 
 #[derive(Clone)]
 struct ApplicationState {
@@ -21,7 +21,7 @@ struct ApplicationState {
 pub type HmacSha256 = Hmac<Sha256>;
 
 pub fn create_router(secret: SecretString, registry: WebsiteRegistry) -> Router {
-    let state = ApplicationState { secret,registry };
+    let state = ApplicationState { secret, registry };
     Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/health", get(|| async { "OK" }))
@@ -29,8 +29,8 @@ pub fn create_router(secret: SecretString, registry: WebsiteRegistry) -> Router 
         .with_state(state)
 }
 
-pub async fn run_http_server(port: u16, secret: SecretString,registry: WebsiteRegistry) {
-    let router = create_router(secret,registry);
+pub async fn run_http_server(port: u16, secret: SecretString, registry: WebsiteRegistry) {
+    let router = create_router(secret, registry);
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await.unwrap();
     axum::serve(listener, router).await.unwrap();
 }
@@ -52,28 +52,20 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
             return (StatusCode::UNAUTHORIZED, "Invalid secret").into_response();
         }
     }
-
-    let repo_name = json_body
-        .get("repository")
-        .and_then(|repo| repo.get("full_name"))
-        .and_then(|name| name.as_str())
-        .unwrap_or("");
-    let branch_ref = json_body
-        .get("ref")
-        .and_then(|r| r.as_str())
-        .unwrap_or("");
-    if let Some(website) = state.registry.get_website_by_repo_name_and_branch_ref(repo_name.parse().unwrap(), branch_ref.parse().unwrap()) {
-        log::debug!("Selected website: {}", website.id);
-        match website.update_sources() {
-            Ok(_) => log::info!("Sources updated for website: {}", website.id),
-            Err(e) => log::error!("Failed to update sources for website '{}': {}", website.id, e),
+    let repo_name = json_body.get("repository").and_then(|repo| repo.get("full_name")).and_then(|name| name.as_str()).unwrap_or("");
+    let branch_ref = json_body.get("ref").and_then(|r| r.as_str()).unwrap_or("");
+    let website = state.registry.get_website_by_repo_name_and_branch_ref(String::from(repo_name), String::from(branch_ref));
+    match website {
+        Some(website) => {
+            log::info!("Processing website: {}", website.id);
+            match state.registry.process_website(website.clone()) {
+                Ok(_) => log::info!("Website '{}' updated successfully", website.id),
+                Err(e) => log::error!("Failed to update website '{}': {}", website.id, e),
+            }
         }
-
-    } else {
-        log::error!("Could not find website for repo_name: {} and branch_ref: {}", repo_name,branch_ref);
+        None => {
+            log::warn!("Website with repo_name: {} and branch_ref:{} not found in registry", String::from(repo_name), String::from(branch_ref));
+        }
     }
-
-
-
     (StatusCode::OK, "OK").into_response()
 }

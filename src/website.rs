@@ -48,7 +48,7 @@ impl Website {
                     target_folder_for_build = std::path::Path::new(&self.webroot).join("public_2");
                 }
             }
-            Err(e) => {
+            Err(_e) => {
                 log::debug!("No symlink found at: {}, creating new one", target_folder_symlink_path.display());
             }
         }
@@ -69,7 +69,7 @@ impl Website {
         }
         if self.index {
             log::debug!("Building index for website: {}...", self.id);
-            build_index(self.clone(), target_folder_for_build.clone())?;
+            build_index(target_folder_for_build.clone())?;
         }
         if target_folder_symlink_path.exists() {
             fs::remove_file(target_folder_symlink_path.clone())?;

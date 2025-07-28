@@ -10,14 +10,14 @@ websites:
       clone_id: "git@github.com:antleaf/repo_for_testing_webhooks.git"
       repo_name: 'antleaf/repo_for_testing_webhooks'
       branch: 'development'
-  - id: "www.paulwalk.net"
-    processor_root: 'webroot'
-    content_processor: 'Hugo'
-    index: true
-    git:
-      clone_id: "git@github.com:paulwalk/www.paulwalk.net.git"
-      repo_name: 'paulwalk/www.paulwalk.net'
-      branch: 'main'
+#  - id: "www.paulwalk.net"
+#    processor_root: 'webroot'
+#    content_processor: 'Hugo'
+#    index: true
+#    git:
+#      clone_id: "git@github.com:paulwalk/www.paulwalk.net.git"
+#      repo_name: 'paulwalk/www.paulwalk.net'
+#      branch: 'main'
 #  - id: "www.antleaf.com"
 #    processor_root: 'webroot'
 #    content_processor: 'hugo'
