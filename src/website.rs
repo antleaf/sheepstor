@@ -31,7 +31,15 @@ impl Website {
 
     pub fn update_sources(&self) -> Result<(), Box<dyn std::error::Error>> {
         log::debug!("Updating sources for website: {}", self.id);
-        self.git_repo.clone()?;
+        let git_repo_path = std::path::Path::new(&self.git_repo.working_dir).join(".git");
+        // Check if the git repository exists, if not, clone it
+        if !git_repo_path.exists() {
+            log::debug!("Cloning repository for website: {}", self.id);
+            self.git_repo.clone()?;
+            log::debug!("Repository cloned for website: {}", self.id);
+            return Ok(());
+        }
+        self.git_repo.pull()?;
         log::debug!("Sources updated for website: {}", self.id);
         Ok(())
     }
