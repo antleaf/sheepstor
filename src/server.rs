@@ -23,7 +23,7 @@ pub type HmacSha256 = Hmac<Sha256>;
 pub fn create_router(secret: SecretString, registry: WebsiteRegistry) -> Router {
     let state = ApplicationState { secret, registry };
     Router::new()
-        .route("/", get(|| async { "Hello, World!" }))
+        .route("/", get(|| async { "Sheepstor" }))
         .route("/health", get(|| async { "OK" }))
         .route("/update", post(post_process_github_webhook))
         .with_state(state)

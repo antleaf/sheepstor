@@ -8,6 +8,7 @@ use strum_macros::EnumString;
 
 #[derive(Clone, EnumString, Debug)]
 pub enum ContentProcessor {
+    Unknown,
     Hugo,
     None,
     // Add other content processors as needed e.g.. Jekyll, MkDocs, etc.
@@ -30,7 +31,7 @@ impl Website {
         let git_repo = GitRepository::new(clone_id, repo_name, branch_name, source_path.to_str().unwrap().to_string());
         Website {
             id,
-            content_processor: ContentProcessor::from_str(cp.as_str()).unwrap_or(ContentProcessor::None),
+            content_processor: ContentProcessor::from_str(cp.as_str()).unwrap_or(ContentProcessor::Unknown),
             processor_root: source_path.join(pr).to_str().unwrap().to_string(),
             webroot: web_root.to_str().unwrap().to_string(),
             index,
@@ -62,9 +63,13 @@ impl Website {
                 log::debug!("Building website: {} using Hugo", self.id);
                 build_with_hugo(self.clone(), target_folder_for_build.clone())?;
             }
-            _ => {
+            ContentProcessor::None => {
                 log::debug!("Building website: {} without processor (using verbatim copy)", self.id);
                 build_with_verbatim_copy(self.clone(), target_folder_for_build.clone())?;
+            }
+            ContentProcessor::Unknown => {
+                log::error!("Unrecognised content processor for website: {}", self.id);
+                return Err("Unrecognised content processor for website".into());
             }
         }
         if self.index {

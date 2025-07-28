@@ -27,12 +27,11 @@ async fn main() {
                 "all" => {
                     log::info!("Updating all sites");
                     match registry.process_all_websites() {
-                        Ok(_) => log::info!("All websites updated successfully"),
+                        Ok(_) => log::info!("Website batch update completed"),
                         Err(e) => log::error!("Failed to update all websites: {}", e),
                     }
                 }
                 _ => {
-                    log::info!("Updating specific site(s): {}", sites);
                     let site_list: Vec<&str> = sites.split(',').collect();
                     for site_id in site_list {
                         let website = registry.get_website_by_id(site_id);

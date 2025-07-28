@@ -18,14 +18,14 @@ websites:
 #      clone_id: "git@github.com:paulwalk/www.paulwalk.net.git"
 #      repo_name: 'paulwalk/www.paulwalk.net'
 #      branch: 'main'
-#  - id: "www.antleaf.com"
-#    processor_root: 'webroot'
-#    content_processor: 'hugo'
-#    index: false
-#    git:
-#      clone_id: "git@github.com:antleaf/www.antleaf.com.git"
-#      repo_name: 'antleaf/www.antleaf.com'
-#      branch: 'master'
+  - id: "www.antleaf.com"
+    processor_root: 'webroot'
+    content_processor: 'Hugo'
+    index: false
+    git:
+      clone_id: "git@github.com:antleaf/www.antleaf.com.git"
+      repo_name: 'antleaf/www.antleaf.com'
+      branch: 'master'
 #  - id: "coar-notify.net"
 #    processor_root: 'webroot'
 #    content_processor: 'hugo'
