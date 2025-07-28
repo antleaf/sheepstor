@@ -1,4 +1,4 @@
-use crate::config::AppConfig;
+use crate::git::GitRepository;
 
 pub struct Website {
     pub id: String,
@@ -6,33 +6,36 @@ pub struct Website {
     pub processor_root: String,
     pub webroot: String,
     pub index: bool,
-    // pub git_repo
+    pub git_repo: GitRepository,
 }
 
 impl Website {
-    pub fn new(id: String, cp: String, pr: String, wr: String, index: bool) -> Website {
+    pub fn new(id: String, sr: String, cp: String, pr: String, wr: String, index: bool,clone_id: String, repo_name: String, branch_name: String) -> Website {
         let web_root = std::path::Path::new(&wr).join(&id);
+        let source_path = std::path::Path::new(&sr).join(&id);
+        let git_repo = GitRepository::new(
+            clone_id,
+            repo_name,
+            branch_name,
+            source_path.to_str().unwrap().to_string(),
+        );
         Website {
             id,
             content_processor: cp,
             processor_root: pr,
             webroot: web_root.to_str().unwrap().to_string(),
             index,
+            git_repo,
         }
     }
+
+    pub fn update_sources(&self) -> Result<(), Box<dyn std::error::Error>> {
+        log::debug!("Updating sources for website: {}", self.id);
+        self.git_repo.clone()?;
+        log::debug!("Sources updated for website: {}", self.id);
+        Ok(())
+    }
+
+
 }
 
-pub fn load_websites(config: &AppConfig) -> Result<Vec<Website>, Box<dyn std::error::Error>> {
-    let mut websites = Vec::new();
-    for website_config in &config.websites {
-        let website = Website::new(
-            website_config.id.clone(),
-            website_config.content_processor.clone(),
-            website_config.processor_root.clone(),
-            website_config.processor_root.clone(),
-            website_config.index,
-        );
-        websites.push(website);
-    }
-    Ok(websites)
-}

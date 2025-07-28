@@ -5,3 +5,5 @@ pub mod website;
 pub mod server;
 pub mod scratch;
 pub mod auth;
+pub mod git;
+pub mod website_registry;
