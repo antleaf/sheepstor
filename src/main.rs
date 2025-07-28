@@ -15,23 +15,23 @@ async fn main() {
     let registry = website_registry::WebsiteRegistry::new(&config);
     log::info!("Loaded {} websites", registry.count());
 
-    let test_website_id = "www.antleaf.com";
-    if let Some(website) = registry.get_website(test_website_id) {
-        log::debug!("Selected website: {}", website.id);
-        log::debug!("Source root for website: {} are at: {}",website.id, website.git_repo.working_dir);
-        match website.update_sources() {
-            Ok(_) => log::info!("Sources updated for website: {}", website.id),
-            Err(e) => log::error!("Failed to update sources for website '{}': {}", website.id, e),
-        }
-    } else {
-        log::debug!("Website with ID '{}' not found", test_website_id);
-    }
+    // let test_website_id = "repo_for_testing_webhooks";
+    // if let Some(website) = registry.get_website(test_website_id) {
+    //     log::debug!("Selected website: {}", website.id);
+    //     log::debug!("Source root for website: {} are at: {}", website.id, website.git_repo.working_dir);
+    //     match website.update_sources() {
+    //         Ok(_) => log::info!("Sources updated for website: {}", website.id),
+    //         Err(e) => log::error!("Failed to update sources for website '{}': {}", website.id, e),
+    //     }
+    // } else {
+    //     log::debug!("Website with ID '{}' not found", test_website_id);
+    // }
 
     match &cli.commands {
         Commands::Server { port } => {
             log::info!("Running Server on port: {}", port);
             let secret = get_secret_from_env(config.github_webhook_secret_env_key).expect("Failed to get secret from env - quitting");
-            run_http_server(*port, secret).await;
+            run_http_server(*port, secret, registry).await;
         }
         Commands::Update { sites } => {
             log::info!("Updating site(s): {}", sites);

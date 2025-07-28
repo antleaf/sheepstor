@@ -1,4 +1,5 @@
 
+#[derive(Clone)]
 pub struct GitRepository {
     pub clone_id: String,
     pub repo_name: String,

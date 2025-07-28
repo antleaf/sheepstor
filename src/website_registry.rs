@@ -1,6 +1,9 @@
 use crate::config::AppConfig;
 use crate::website::Website;
 
+
+
+#[derive(Clone)]
 pub struct WebsiteRegistry {
     pub websites: Vec<Website>,
 }
@@ -33,6 +36,10 @@ impl WebsiteRegistry {
     
     pub fn get_website(&self, id: &str) -> Option<&Website> {
         self.websites.iter().find(|w| w.id == id)
+    }
+
+    pub fn get_website_by_repo_name_and_branch_ref(&self, repo_name: String, branch_ref: String)  -> Option<&Website> {
+        self.websites.iter().find(|w| w.git_repo.repo_name == repo_name && w.git_repo.branch_ref() == branch_ref)
     }
 
 }

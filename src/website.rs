@@ -1,5 +1,6 @@
 use crate::git::GitRepository;
 
+#[derive(Clone)]
 pub struct Website {
     pub id: String,
     pub content_processor: String,

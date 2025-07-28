@@ -2,14 +2,22 @@ source_root: /opt/data/sheepstor_rust/data/sources
 docs_root: /opt/data/sheepstor_rust/data/docs
 github_webhook_secret_env_key: ANTLEAF_K8S_GITHUB_WEBHOOK_SECRET
 websites:
-  - id: "www.antleaf.com"
+  - id: "repo_for_testing_webhooks"
     processor_root: 'webroot'
     content_processor: 'hugo'
     index: false
     git:
-      clone_id: "git@github.com:antleaf/www.antleaf.com.git"
-      repo_name: 'antleaf/www.antleaf.com'
-      branch: 'master'
+      clone_id: "git@github.com:antleaf/repo_for_testing_webhooks.git"
+      repo_name: 'antleaf/repo_for_testing_webhooks'
+      branch: 'development'
+#  - id: "www.antleaf.com"
+#    processor_root: 'webroot'
+#    content_processor: 'hugo'
+#    index: false
+#    git:
+#      clone_id: "git@github.com:antleaf/www.antleaf.com.git"
+#      repo_name: 'antleaf/www.antleaf.com'
+#      branch: 'master'
 #  - id: "coar-notify.net"
 #    processor_root: 'webroot'
 #    content_processor: 'hugo'
