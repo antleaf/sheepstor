@@ -26,8 +26,6 @@ impl GitRepository {
             .arg("-C")
             .arg(&self.working_dir)
             .arg("pull")
-            .arg("origin")
-            .arg(&self.branch_name)
             .output()?;
 
         if output.status.success() {
