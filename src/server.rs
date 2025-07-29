@@ -31,7 +31,7 @@ pub fn create_router(secret: SecretString, registry: WebsiteRegistry) -> Router 
 
 pub async fn run_http_server(port: u16, secret: SecretString, registry: WebsiteRegistry) {
     let router = create_router(secret, registry);
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port)).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await.unwrap();
     axum::serve(listener, router).await.unwrap();
 }
 
@@ -39,7 +39,7 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
     let json_body: serde_json::Value = match serde_json::from_str(&body) {
         Ok(json) => json,
         Err(e) => {
-            log::error!("Failed to parse JSON body: {}", e);
+            log::error!("Failed to parse JSON body: {e}");
             return (StatusCode::BAD_REQUEST, "Invalid JSON").into_response();
         }
     };
@@ -48,7 +48,7 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
             log::debug!("Successfully verified signature");
         }
         Err(e) => {
-            log::error!("Failed to verify signature: {}", e);
+            log::error!("Failed to verify signature: {e}");
             return (StatusCode::UNAUTHORIZED, "Invalid secret").into_response();
         }
     }

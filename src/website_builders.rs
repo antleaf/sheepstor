@@ -15,14 +15,13 @@ pub fn build_with_hugo(website: Website,target_folder_for_build: PathBuf) -> Res
         Ok(())
     } else {
         let error_message = String::from_utf8_lossy(&hugo_build_command_output.stderr);
-        Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
+        Err(Box::new(std::io::Error::other(error_message)))
     }
 }
 
 pub fn build_with_verbatim_copy(website: Website,target_folder_for_build: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let source_path = PathBuf::from(&website.processor_root);
-    let dest_path = PathBuf::from(target_folder_for_build);
-    copy_dir_all(source_path,dest_path)?;
+    copy_dir_all(source_path,target_folder_for_build)?;
     Ok(())
 }
 
@@ -35,7 +34,7 @@ pub fn build_index(target_folder_for_build: PathBuf) -> Result<(), Box<dyn std::
         Ok(())
     } else {
         let error_message = String::from_utf8_lossy(&index_build_command_output.stderr);
-        Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
+        Err(Box::new(std::io::Error::other(error_message)))
     }
 }
 

@@ -9,7 +9,7 @@ pub fn get_secret_from_env(key: String) -> Result<SecretString, VarError> {
     match env::var(key.clone()) {
         Ok(value) => Ok(SecretString::from(value)),
         Err(e) => {
-            log::error!("Error reading ENV variable with key: {} - {}", key, e);
+            log::error!("Error reading ENV variable with key: {key} - {e}");
             Err(e)
         }
     }

@@ -28,7 +28,7 @@ pub struct WebsiteConfig {
 impl AppConfig {
     pub fn load(config_file_path: String) -> Result<AppConfig, Box<dyn std::error::Error>> {
         let path = std::path::Path::new(&config_file_path);
-        let file = match std::fs::File::open(&path) {
+        let file = match std::fs::File::open(path) {
             Ok(file) => {
                 file
             }

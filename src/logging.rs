@@ -26,5 +26,5 @@ pub fn my_own_format(
         style(level).paint(record.file().unwrap_or("<unnamed>")),
         style(level).paint(record.line().unwrap_or(0).to_string()),
     )?;
-    write!(w, "{}", record.args().to_string())
+    write!(w, "{}", record.args())
 }

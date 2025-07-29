@@ -21,7 +21,7 @@ impl GitRepository {
         format!("refs/heads/{}", self.branch_name)
     }
 
-    pub fn pull(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn git_pull(&self) -> Result<(), Box<dyn std::error::Error>> {
         log::debug!("Pulling latest changes for repository {} at branch {}", self.clone_id, self.branch_name);
         let output = std::process::Command::new("git")
             .arg("-C")
@@ -34,11 +34,11 @@ impl GitRepository {
             Ok(())
         } else {
             let error_message = String::from_utf8_lossy(&output.stderr);
-            Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
+            Err(Box::new(std::io::Error::other(error_message)))
         }
     }
 
-    pub fn clone(&self) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn git_clone(&self) -> Result<(), Box<dyn std::error::Error>> {
         log::debug!("Cloning repository {} at branch {} into {}", self.clone_id, self.branch_name, self.working_dir);
         let output = std::process::Command::new("git")
             .arg("clone")
@@ -53,7 +53,7 @@ impl GitRepository {
             Ok(())
         } else {
             let error_message = String::from_utf8_lossy(&output.stderr);
-            Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_message)))
+            Err(Box::new(std::io::Error::other(error_message)))
         }
     }
 }

@@ -79,7 +79,7 @@ impl Website {
         if target_folder_symlink_path.exists() {
             fs::remove_file(target_folder_symlink_path.clone())?;
         }
-        symlink(target_folder_for_build.to_str().unwrap().to_string(), target_folder_symlink_path.to_str().unwrap().to_string())?;
+        symlink(target_folder_for_build.to_str().unwrap(), target_folder_symlink_path.to_str().unwrap())?;
         Ok(())
     }
 
@@ -89,11 +89,11 @@ impl Website {
         // Check if the git repository exists, if not, clone it
         if !git_repo_path.exists() {
             log::debug!("Cloning repository for website: {}", self.id);
-            self.git_repo.clone()?;
+            self.git_repo.git_clone()?;
             log::debug!("Repository cloned for website: {}", self.id);
             return Ok(());
         }
-        self.git_repo.pull()?;
+        self.git_repo.git_pull()?;
         log::debug!("Sources updated for website: {}", self.id);
         Ok(())
     }
