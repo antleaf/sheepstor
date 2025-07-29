@@ -3,3 +3,4 @@
 .DS_Store
 /DEV_NOTES/
 /.cargo/
+/config/config.yaml
