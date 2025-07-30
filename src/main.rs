@@ -38,7 +38,7 @@ async fn main() {
                         match website {
                             Some(website) => {
                                 log::info!("Processing website: {}", website.id);
-                                match registry.process_website(&website) {
+                                match registry.process_website(website) {
                                     Ok(_) => log::info!("Website '{}' updated successfully", website.id),
                                     Err(e) => log::error!("Failed to update website '{}': {}", website.id, e),
                                 }

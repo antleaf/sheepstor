@@ -61,11 +61,11 @@ impl Website {
         match self.content_processor {
             ContentProcessor::Hugo => {
                 log::debug!("Building website: {} using Hugo", self.id);
-                build_with_hugo(&self, &target_folder_for_build)?;
+                build_with_hugo(self, &target_folder_for_build)?;
             }
             ContentProcessor::None => {
                 log::debug!("Building website: {} without processor (using verbatim copy)", self.id);
-                build_with_verbatim_copy(&self, &target_folder_for_build)?;
+                build_with_verbatim_copy(self, &target_folder_for_build)?;
             }
             ContentProcessor::Unknown => {
                 log::error!("Unrecognised content processor for website: {}", self.id);

@@ -51,7 +51,7 @@ impl WebsiteRegistry {
 
     pub fn process_all_websites(&self) -> Result<(), Box<dyn std::error::Error>> {
         self.websites.iter().for_each(|website| {
-            match self.process_website(&website) {
+            match self.process_website(website) {
                 Ok(_) => log::info!("Website {} processed successfully", website.id),
                 Err(e) => log::error!("Failed to process website '{}': {}", website.id, e),
             }
