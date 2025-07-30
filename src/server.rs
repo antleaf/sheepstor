@@ -1,4 +1,4 @@
-use crate::auth::validate_github_secret3;
+use crate::auth::validate_github_secret;
 use crate::website_registry::WebsiteRegistry;
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
@@ -43,7 +43,7 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
             return (StatusCode::BAD_REQUEST, "Invalid JSON").into_response();
         }
     };
-    match validate_github_secret3(state.secret.expose_secret(), headers, body) {
+    match validate_github_secret(state.secret.expose_secret(), headers, body) {
         Ok(_) => {
             log::debug!("Successfully verified signature");
         }
