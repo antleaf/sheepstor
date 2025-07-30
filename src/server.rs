@@ -31,8 +31,8 @@ pub fn create_router(secret: SecretString, registry: WebsiteRegistry) -> Router 
 
 pub async fn run_http_server(port: u16, secret: SecretString, registry: WebsiteRegistry) {
     let router = create_router(secret, registry);
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await.unwrap();
-    axum::serve(listener, router).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{port}")).await.expect("Failed to bind to port");
+    axum::serve(listener, router).await.expect("Failed to start http server");
 }
 
 async fn post_process_github_webhook(State(state): State<ApplicationState>, headers: HeaderMap, body: String) -> Response {

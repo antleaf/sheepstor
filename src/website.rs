@@ -28,12 +28,12 @@ impl Website {
     pub fn new(id: String, sr: String, cp: String, pr: String, wr: String, index: bool, clone_id: String, repo_name: String, branch_name: String) -> Website {
         let web_root = std::path::Path::new(&wr).join(&id);
         let source_path = std::path::Path::new(&sr).join(&id);
-        let git_repo = GitRepository::new(clone_id, repo_name, branch_name, source_path.to_str().unwrap().to_string());
+        let git_repo = GitRepository::new(clone_id, repo_name, branch_name, source_path.display().to_string());
         Website {
             id,
             content_processor: ContentProcessor::from_str(cp.as_str()).unwrap_or(ContentProcessor::Unknown),
-            processor_root: source_path.join(pr).to_str().unwrap().to_string(),
-            webroot: web_root.to_str().unwrap().to_string(),
+            processor_root: source_path.join(pr).display().to_string(),
+            webroot: web_root.display().to_string(),
             index,
             git_repo,
         }
@@ -43,7 +43,7 @@ impl Website {
         create_dir_all(std::path::Path::new(&self.webroot).join("logs"))?;
         let mut target_folder_for_build = std::path::Path::new(&self.webroot).join("public_1");
         let target_folder_symlink_path = std::path::Path::new(&self.webroot).join("public");
-        match fs::read_link(target_folder_symlink_path.to_str().unwrap()) {
+        match fs::read_link(target_folder_symlink_path.clone()) {
             Ok(path) => {
                 if path == target_folder_for_build {
                     target_folder_for_build = std::path::Path::new(&self.webroot).join("public_2");
@@ -79,7 +79,7 @@ impl Website {
         if target_folder_symlink_path.exists() {
             fs::remove_file(target_folder_symlink_path.clone())?;
         }
-        symlink(target_folder_for_build.to_str().unwrap(), target_folder_symlink_path.to_str().unwrap())?;
+        symlink(target_folder_for_build, target_folder_symlink_path)?;
         Ok(())
     }
 
