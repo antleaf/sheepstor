@@ -42,7 +42,7 @@ impl WebsiteRegistry {
         self.websites.iter().find(|w| w.git_repo.repo_name == repo_name && w.git_repo.branch_ref() == branch_ref)
     }
 
-    pub fn process_website(&self, website: Website) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn process_website(&self, website: &Website) -> Result<(), Box<dyn std::error::Error>> {
         log::debug!("Processing website: {}...", website.id);
         website.update_sources()?;
         website.build()?;
@@ -51,7 +51,7 @@ impl WebsiteRegistry {
 
     pub fn process_all_websites(&self) -> Result<(), Box<dyn std::error::Error>> {
         self.websites.iter().for_each(|website| {
-            match self.process_website(website.clone()) {
+            match self.process_website(&website) {
                 Ok(_) => log::info!("Website {} processed successfully", website.id),
                 Err(e) => log::error!("Failed to process website '{}': {}", website.id, e),
             }

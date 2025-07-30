@@ -2,7 +2,7 @@ use std::{fs, io};
 use std::path::{Path, PathBuf};
 use crate::website::Website;
 
-pub fn build_with_hugo(website: Website,target_folder_for_build: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub fn build_with_hugo(website: &Website,target_folder_for_build: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let hugo_build_command_output = std::process::Command::new("hugo")
         .arg("--quiet")
         .arg("--ignoreCache")
@@ -19,13 +19,13 @@ pub fn build_with_hugo(website: Website,target_folder_for_build: PathBuf) -> Res
     }
 }
 
-pub fn build_with_verbatim_copy(website: Website,target_folder_for_build: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub fn build_with_verbatim_copy(website: &Website,target_folder_for_build: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let source_path = PathBuf::from(&website.processor_root);
     copy_dir_all(source_path,target_folder_for_build)?;
     Ok(())
 }
 
-pub fn build_index(target_folder_for_build: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+pub fn build_index(target_folder_for_build: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
     let index_build_command_output = std::process::Command::new("pagefind")
         .arg("--site")
         .arg(target_folder_for_build)

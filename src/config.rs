@@ -51,8 +51,8 @@ impl AppConfig {
     }
 
     pub fn initialise(&self)-> Result<(), Box<dyn std::error::Error>> {
-        fs::create_dir_all(self.source_root.clone())?;
-        fs::create_dir_all(self.docs_root.clone())?;
+        fs::create_dir_all(&self.source_root)?;
+        fs::create_dir_all(&self.docs_root)?;
         Ok(())
     }
 }

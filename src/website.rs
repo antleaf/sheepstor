@@ -43,29 +43,29 @@ impl Website {
         create_dir_all(std::path::Path::new(&self.webroot).join("logs"))?;
         let mut target_folder_for_build = std::path::Path::new(&self.webroot).join("public_1");
         let target_folder_symlink_path = std::path::Path::new(&self.webroot).join("public");
-        match fs::read_link(target_folder_symlink_path.clone()) {
+        match fs::read_link(&target_folder_symlink_path) {
             Ok(path) => {
                 if path == target_folder_for_build {
                     target_folder_for_build = std::path::Path::new(&self.webroot).join("public_2");
                 }
             }
             Err(_e) => {
-                log::debug!("No symlink found at: {}, creating new one", target_folder_symlink_path.display());
+                log::debug!("No symlink found at: {}, creating new one", &target_folder_symlink_path.display());
             }
         }
         if target_folder_for_build.exists() {
-            fs::remove_dir_all(target_folder_for_build.clone())?;
+            fs::remove_dir_all(&target_folder_for_build)?;
         }
-        create_dir_all(target_folder_for_build.clone())?;
+        create_dir_all(&target_folder_for_build)?;
 
         match self.content_processor {
             ContentProcessor::Hugo => {
                 log::debug!("Building website: {} using Hugo", self.id);
-                build_with_hugo(self.clone(), target_folder_for_build.clone())?;
+                build_with_hugo(&self, &target_folder_for_build)?;
             }
             ContentProcessor::None => {
                 log::debug!("Building website: {} without processor (using verbatim copy)", self.id);
-                build_with_verbatim_copy(self.clone(), target_folder_for_build.clone())?;
+                build_with_verbatim_copy(&self, &target_folder_for_build)?;
             }
             ContentProcessor::Unknown => {
                 log::error!("Unrecognised content processor for website: {}", self.id);
@@ -74,10 +74,10 @@ impl Website {
         }
         if self.index {
             log::debug!("Building index for website: {}...", self.id);
-            build_index(target_folder_for_build.clone())?;
+            build_index(&target_folder_for_build)?;
         }
         if target_folder_symlink_path.exists() {
-            fs::remove_file(target_folder_symlink_path.clone())?;
+            fs::remove_file(&target_folder_symlink_path)?;
         }
         symlink(target_folder_for_build, target_folder_symlink_path)?;
         Ok(())

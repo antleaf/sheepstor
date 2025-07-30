@@ -58,7 +58,7 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
     match website {
         Some(website) => {
             log::info!("Processing website: {}", website.id);
-            match state.registry.process_website(website.clone()) {
+            match state.registry.process_website(&website) {
                 Ok(_) => log::info!("Website '{}' updated successfully", website.id),
                 Err(e) => log::error!("Failed to update website '{}': {}", website.id, e),
             }
