@@ -1,5 +1,5 @@
 # SheepsTor
-Utility for updating static websites (served via Hugo) from Github (responding to GitHub webhook events)
+Utility for updating static websites manually or by responding to GitHub webhook events.
 
 ## Configuration
 Sheepstor is configured from two places:
@@ -32,7 +32,7 @@ Run any of the commands below with an additional flag `--debug`
 ```
 
 ### Update all websites
-(also useful for InitContainer to set up web service)
+(also useful for InitContainer to set up web service if deployed in Kubernetes)
 ```bash
 ./sheepstor update --config=<CONFIG_FILE_PATH> --sites=all
 ```
