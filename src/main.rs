@@ -1,8 +1,9 @@
+pub mod server;
 use clap::Parser;
 use sheepstor::auth::get_secret_from_env;
 use sheepstor::cli::{Cli, Commands};
 use sheepstor::logging::configure_flexi_logger;
-use sheepstor::server::run_http_server;
+use crate::server::run_http_server;
 use sheepstor::website_registry;
 
 #[tokio::main]

@@ -2,10 +2,11 @@ pub mod cli;
 pub mod logging;
 pub mod config;
 pub mod website;
-pub mod server;
+
 pub mod scratch;
 pub mod auth;
 pub mod git;
 pub mod website_registry;
 pub mod website_builders;
 pub mod errors;
+pub mod github_webhook;
