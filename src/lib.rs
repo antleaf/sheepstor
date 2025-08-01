@@ -1,6 +1,5 @@
 pub mod cli;
 pub mod logging;
-pub mod config;
 pub mod website;
 pub mod utilities;
 pub mod git;

@@ -1,26 +1,28 @@
+use serde::{Deserialize};
 
-#[derive(Clone)]
+#[derive(Clone,Deserialize)]
 pub struct GitRepository {
     pub clone_id: String,
-    pub branch_name: String,
+    pub branch: String,
+    #[serde(default)]
     pub working_dir: String,
 }
 
 impl GitRepository {
-    pub fn new(clone_id: String, branch_name: String, working_dir: String) -> GitRepository {
+    pub fn new(clone_id: String, branch: String, working_dir: String) -> GitRepository {
         GitRepository {
             clone_id,
-            branch_name,
+            branch,
             working_dir,
         }
     }
 
     pub fn branch_ref(&self) -> String {
-        format!("refs/heads/{}", self.branch_name)
+        format!("refs/heads/{}", self.branch)
     }
 
     pub fn git_pull(&self) -> Result<(), Box<dyn std::error::Error>> {
-        log::debug!("Pulling latest changes for repository {} at branch {}", self.clone_id, self.branch_name);
+        log::debug!("Pulling latest changes for repository {} at branch {}", self.clone_id, self.branch);
         let output = std::process::Command::new("git")
             .arg("-C")
             .arg(&self.working_dir)
@@ -37,11 +39,11 @@ impl GitRepository {
     }
 
     pub fn git_clone(&self) -> Result<(), Box<dyn std::error::Error>> {
-        log::debug!("Cloning repository {} at branch {} into {}", self.clone_id, self.branch_name, self.working_dir);
+        log::debug!("Cloning repository {} at branch {} into {}", self.clone_id, self.branch, self.working_dir);
         let output = std::process::Command::new("git")
             .arg("clone")
             .arg("-b")
-            .arg(&self.branch_name)
+            .arg(&self.branch)
             .arg(&self.clone_id)
             .arg(&self.working_dir)
             .output()?;

@@ -1,8 +1,8 @@
-use crate::config::AppConfig;
-use crate::git::GitRepository;
 use crate::website::Website;
+use serde::{Deserialize};
+use std::fs;
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
 pub struct WebsiteRegistry {
     pub source_root: String,
     pub docs_root: String,
@@ -10,33 +10,37 @@ pub struct WebsiteRegistry {
 }
 
 impl WebsiteRegistry {
-    pub fn new(config: &AppConfig) -> Self {
-        let mut registry = WebsiteRegistry {
-            source_root: config.source_root.clone(),
-            docs_root: config.docs_root.clone(),
-            websites: Vec::new(),
+    pub fn config(config_file_path: String) -> Result<WebsiteRegistry, Box<dyn std::error::Error>> {
+        let path = std::path::Path::new(&config_file_path);
+        let file = match std::fs::File::open(path) {
+            Ok(file) => file,
+            Err(err) => {
+                log::error!("Couldn't open {}: {}", path.display(), err);
+                return Err(err.into());
+            }
         };
-        for website_config in &config.websites {
-            let git_repo = GitRepository {
-                clone_id: website_config.git.clone_id.clone(),
-                branch_name: website_config.git.branch.clone(),
-                working_dir: std::path::Path::new(&registry.source_root).join(&website_config.id).display().to_string(),
-            };
+        let registry: WebsiteRegistry = match serde_yaml::from_reader(file) {
+            Ok(registry) => {
+                log::info!("Loaded config from file at {}", path.display());
+                registry
+            }
+            Err(err) => {
+                log::error!("Error deserializing YAML from config file at {}: {}", path.display(), err);
+                return Err(err.into());
+            }
+        };
+        Ok(registry)
+    }
 
-            let website_processor_root = std::path::Path::new(&registry.source_root).join(&website_config.id).join(&website_config.processor_root);
-
-            let website = Website::new(
-                website_config.id.clone(),
-                website_config.content_processor.clone(),
-                website_processor_root.display().to_string(),
-                website_config.github_webhook_secret_env_key.clone(),
-                registry.docs_root.clone(),
-                website_config.index,
-                git_repo,
-            );
-            registry.websites.push(website);
+    pub fn initialise(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        fs::create_dir_all(&self.source_root)?;
+        fs::create_dir_all(&self.docs_root)?;
+        for website in &mut self.websites {
+            website.processor_root = std::path::Path::new(&self.source_root).join(&website.id).join(&website.processor_root).display().to_string();
+            website.webroot = std::path::Path::new(&self.docs_root).join(&website.id).display().to_string();
+            website.git.working_dir = std::path::Path::new(&self.source_root).join(&website.id).display().to_string();
         }
-        registry
+        Ok(())
     }
 
     pub fn count(&self) -> u8 {

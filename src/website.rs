@@ -4,9 +4,10 @@ use std::fs;
 use std::fs::create_dir_all;
 use std::os::unix::fs::symlink;
 use std::str::FromStr;
+use serde::{Deserialize};
 use strum_macros::EnumString;
 
-#[derive(Clone, EnumString, Debug)]
+#[derive(Clone, EnumString, Debug, Deserialize)]
 pub enum ContentProcessor {
     Unknown,
     Hugo,
@@ -14,15 +15,16 @@ pub enum ContentProcessor {
     // Add other content processors as needed e.g.. Jekyll, MkDocs, etc.
 }
 
-#[derive(Clone)]
+#[derive(Clone, Deserialize)]
 pub struct Website {
     pub id: String,
     pub content_processor: ContentProcessor,
     pub processor_root: String,
     pub github_webhook_secret_env_key: String,
+    #[serde(default)]
     pub webroot: String,
     pub index: bool,
-    pub git_repo: GitRepository,
+    pub git: GitRepository,
 }
 
 impl Website {
@@ -35,7 +37,7 @@ impl Website {
             github_webhook_secret_env_key,
             webroot: web_root.display().to_string(),
             index,
-            git_repo,
+            git: git_repo,
         }
     }
 
@@ -85,15 +87,15 @@ impl Website {
 
     pub fn update_sources(&self) -> Result<(), Box<dyn std::error::Error>> {
         log::debug!("Updating sources for website: {}", self.id);
-        let git_repo_path = std::path::Path::new(&self.git_repo.working_dir).join(".git");
+        let git_repo_path = std::path::Path::new(&self.git.working_dir).join(".git");
         // Check if the git repository exists, if not, clone it
         if !git_repo_path.exists() {
             log::debug!("Cloning repository for website: {}", self.id);
-            self.git_repo.git_clone()?;
+            self.git.git_clone()?;
             log::debug!("Repository cloned for website: {}", self.id);
             return Ok(());
         }
-        self.git_repo.git_pull()?;
+        self.git.git_pull()?;
         log::debug!("Sources updated for website: {}", self.id);
         Ok(())
     }
