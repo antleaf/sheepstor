@@ -1,6 +1,6 @@
 pub mod server;
 use clap::Parser;
-use sheepstor::auth::get_secret_from_env;
+use sheepstor::utilities::get_secret_from_env;
 use sheepstor::cli::{Cli, Commands};
 use sheepstor::logging::configure_flexi_logger;
 use crate::server::run_http_server;

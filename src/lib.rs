@@ -2,7 +2,7 @@ pub mod cli;
 pub mod logging;
 pub mod config;
 pub mod website;
-pub mod auth;
+pub mod utilities;
 pub mod git;
 pub mod website_registry;
 pub mod website_builders;
