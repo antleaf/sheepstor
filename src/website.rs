@@ -25,10 +25,10 @@ pub struct Website {
 }
 
 impl Website {
-    pub fn new(id: String, sr: String, cp: String, pr: String, wr: String, index: bool, clone_id: String, repo_name: String, branch_name: String) -> Website {
+    pub fn new(id: String, sr: String, cp: String, pr: String, wr: String, index: bool, clone_id: String, branch_name: String) -> Website {
         let web_root = std::path::Path::new(&wr).join(&id);
         let source_path = std::path::Path::new(&sr).join(&id);
-        let git_repo = GitRepository::new(clone_id, repo_name, branch_name, source_path.display().to_string());
+        let git_repo = GitRepository::new(clone_id, branch_name, source_path.display().to_string());
         Website {
             id,
             content_processor: ContentProcessor::from_str(cp.as_str()).unwrap_or(ContentProcessor::Unknown),

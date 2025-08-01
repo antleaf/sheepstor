@@ -8,5 +8,4 @@ websites:
     index: # true or false - will the static website use pagefind indexing for search?
     git:
       clone_id: #e.g. "git@github.com:<GITHUB_ID>/<REPOSITORY_NAME>"
-      repo_name: #e.g. "<GITHUB_ID>/<REPOSITORY_NAME>"
       branch: #e.g. "main"

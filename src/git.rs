@@ -2,16 +2,14 @@
 #[derive(Clone)]
 pub struct GitRepository {
     pub clone_id: String,
-    pub repo_name: String,
     pub branch_name: String,
     pub working_dir: String,
 }
 
 impl GitRepository {
-    pub fn new(clone_id: String, repo_name: String, branch_name: String, working_dir: String) -> GitRepository {
+    pub fn new(clone_id: String, branch_name: String, working_dir: String) -> GitRepository {
         GitRepository {
             clone_id,
-            repo_name,
             branch_name,
             working_dir,
         }

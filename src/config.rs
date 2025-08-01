@@ -12,7 +12,6 @@ pub struct AppConfig {
 #[derive(Serialize, Deserialize)]
 pub struct GitRepoConfig {
     pub clone_id: String,
-    pub repo_name: String,
     pub branch: String,
 }
 

@@ -1,6 +1,6 @@
 use crate::auth::validate_github_secret;
 use crate::website_registry::WebsiteRegistry;
-use axum::extract::State;
+use axum::extract::{Path, State};
 use axum::response::{IntoResponse, Response};
 use axum::{
     Router,
@@ -25,7 +25,7 @@ pub fn create_router(secret: SecretString, registry: WebsiteRegistry) -> Router 
     Router::new()
         .route("/", get(|| async { "Sheepstor" }))
         .route("/health", get(|| async { "OK" }))
-        .route("/update", post(post_process_github_webhook))
+        .route("/update/{website_id}", post(process_github_webhook))
         .with_state(state)
 }
 
@@ -35,14 +35,7 @@ pub async fn run_http_server(port: u16, secret: SecretString, registry: WebsiteR
     axum::serve(listener, router).await.expect("Failed to start http server");
 }
 
-async fn post_process_github_webhook(State(state): State<ApplicationState>, headers: HeaderMap, body: String) -> Response {
-    let json_body: serde_json::Value = match serde_json::from_str(&body) {
-        Ok(json) => json,
-        Err(e) => {
-            log::error!("Failed to parse JSON body: {e}");
-            return (StatusCode::BAD_REQUEST, "Invalid JSON").into_response();
-        }
-    };
+async fn process_github_webhook(State(state): State<ApplicationState>, headers: HeaderMap, Path(website_id): Path<String>, body: String) -> Response {
     match validate_github_secret(state.secret.expose_secret(), headers, body) {
         Ok(_) => {
             log::debug!("Successfully verified signature");
@@ -52,9 +45,7 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
             return (StatusCode::UNAUTHORIZED, "Invalid secret").into_response();
         }
     }
-    let repo_name = json_body.get("repository").and_then(|repo| repo.get("full_name")).and_then(|name| name.as_str()).unwrap_or("");
-    let branch_ref = json_body.get("ref").and_then(|r| r.as_str()).unwrap_or("");
-    let website = state.registry.get_website_by_repo_name_and_branch_ref(String::from(repo_name), String::from(branch_ref));
+    let website = state.registry.get_website_by_id(&website_id);
     match website {
         Some(website) => {
             log::info!("Processing website: {}", website.id);
@@ -64,7 +55,7 @@ async fn post_process_github_webhook(State(state): State<ApplicationState>, head
             }
         }
         None => {
-            log::warn!("Website with repo_name: {} and branch_ref:{} not found in registry", String::from(repo_name), String::from(branch_ref));
+            log::warn!("Website with id: {website_id} not found in registry");
         }
     }
     (StatusCode::OK, "OK").into_response()
