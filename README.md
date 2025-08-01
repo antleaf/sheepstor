@@ -2,10 +2,9 @@
 Utility for updating static websites manually or by responding to GitHub webhook events.
 
 ## Configuration
-Sheepstor is configured from two places:
+Sheepstor is configured from one config file (see `./config/config_SAMPLE.yaml` for annotated example).
 
-1. One environment variables containing a secret to be used by Github webhook. This will need to be set and exported in the runtime environment.
-2. One config file (see `./config/config_SAMPLE.yaml` for annotated example)
+The config file contains some references to ENV variables which must be set in the environment where Sheepstor is run.
 
 Sheepstor currently support two possible content processors (set in the `content_processor` property in the config file):
 - Hugo (invokes Hugo to compile the site)
