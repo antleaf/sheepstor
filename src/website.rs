@@ -25,14 +25,12 @@ pub struct Website {
 }
 
 impl Website {
-    pub fn new(id: String, sr: String, cp: String, pr: String, wr: String, index: bool, clone_id: String, branch_name: String) -> Website {
+    pub fn new(id: String, cp: String, processor_root: String, wr: String, index: bool, git_repo: GitRepository) -> Website {
         let web_root = std::path::Path::new(&wr).join(&id);
-        let source_path = std::path::Path::new(&sr).join(&id);
-        let git_repo = GitRepository::new(clone_id, branch_name, source_path.display().to_string());
         Website {
             id,
             content_processor: ContentProcessor::from_str(cp.as_str()).unwrap_or(ContentProcessor::Unknown),
-            processor_root: source_path.join(pr).display().to_string(),
+            processor_root,
             webroot: web_root.display().to_string(),
             index,
             git_repo,
@@ -60,8 +58,8 @@ impl Website {
 
         match self.content_processor {
             ContentProcessor::Hugo => {
-                log::debug!("Building website: {} using Hugo", self.id);
                 build_with_hugo(self, &target_folder_for_build)?;
+                log::info!("Website: {} built using Hugo in folder: {}", self.id, &target_folder_for_build.display());
             }
             ContentProcessor::None => {
                 log::debug!("Building website: {} without processor (using verbatim copy)", self.id);
