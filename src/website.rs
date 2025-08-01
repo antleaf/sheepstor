@@ -19,18 +19,20 @@ pub struct Website {
     pub id: String,
     pub content_processor: ContentProcessor,
     pub processor_root: String,
+    pub github_webhook_secret_env_key: String,
     pub webroot: String,
     pub index: bool,
     pub git_repo: GitRepository,
 }
 
 impl Website {
-    pub fn new(id: String, cp: String, processor_root: String, wr: String, index: bool, git_repo: GitRepository) -> Website {
+    pub fn new(id: String, cp: String, processor_root: String, github_webhook_secret_env_key: String, wr: String, index: bool, git_repo: GitRepository) -> Website {
         let web_root = std::path::Path::new(&wr).join(&id);
         Website {
             id,
             content_processor: ContentProcessor::from_str(cp.as_str()).unwrap_or(ContentProcessor::Unknown),
             processor_root,
+            github_webhook_secret_env_key,
             webroot: web_root.display().to_string(),
             index,
             git_repo,

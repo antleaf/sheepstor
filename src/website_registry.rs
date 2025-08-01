@@ -28,6 +28,7 @@ impl WebsiteRegistry {
             let website = Website::new(
                 website_config.id.clone(),
                 website_config.content_processor.clone(),
+                website_config.github_webhook_secret_env_key.clone(),
                 website_processor_root.display().to_string(),
                 registry.docs_root.clone(),
                 website_config.index,

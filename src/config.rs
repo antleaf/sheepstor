@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 pub struct AppConfig {
     pub source_root: String,
     pub docs_root: String,
-    pub github_webhook_secret_env_key: String,
     pub websites: Vec<WebsiteConfig>,
 }
 
@@ -20,6 +19,7 @@ pub struct WebsiteConfig {
     pub id: String,
     pub content_processor: String,
     pub processor_root: String,
+    pub github_webhook_secret_env_key: String,
     pub index: bool,
     pub git: GitRepoConfig,
 }
