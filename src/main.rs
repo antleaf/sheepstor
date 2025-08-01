@@ -53,10 +53,6 @@ async fn main() {
                 }
             }
         }
-        Commands::Scratch {} => {
-            log::info!("Running Scratch");
-            sheepstor::scratch::scratch(registry);
-        }
     }
     log::info!("Process Completed");
 }

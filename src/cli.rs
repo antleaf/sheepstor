@@ -37,7 +37,5 @@ pub enum Commands {
         #[clap(long, short = 's')]
         sites: String,
     },
-    Scratch {
-    },
 }
 
